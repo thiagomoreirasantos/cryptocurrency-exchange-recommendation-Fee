@@ -1,4 +1,6 @@
 using CryptoCurrencyRecommendations.Api.Extensions;
+using CryptoCurrencyRecommendations.Domain.interfaces;
+using CryptoCurrencyRecommendations.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
