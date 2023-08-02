@@ -1,4 +1,3 @@
-using CryptoCurrencyRecommendations.Domain;
 using CryptoCurrencyRecommendations.Domain.interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -27,7 +26,7 @@ namespace CryptoCurrencyRecommendations.Services
                 feeEstimate ??= new FeeEstimate();
                 return feeEstimate;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting fee estimate");
                 throw;

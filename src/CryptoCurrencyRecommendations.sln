@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoCurrencyRecommendatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoCurrencyRecommendations.Services", "CryptoCurrencyRecommendations.Services\CryptoCurrencyRecommendations.Services.csproj", "{CC62D135-8E57-4A3E-9690-5E78D9118598}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoCurrencyRecommendations.Domain", "CryptoCurrencyRecommendations.Domain\CryptoCurrencyRecommendations.Domain.csproj", "{CD3C21A0-745F-4898-825A-9A84E477F7B6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

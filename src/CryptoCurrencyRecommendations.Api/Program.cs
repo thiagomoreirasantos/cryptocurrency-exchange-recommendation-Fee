@@ -1,14 +1,13 @@
-using CryptoCurrencyRecommendations.Domain.interfaces;
-using CryptoCurrencyRecommendations.Services;
-using Microsoft.AspNetCore.Mvc;
+using CryptoCurrencyRecommendations.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
@@ -21,14 +20,14 @@ builder.Services.AddScoped<IRateService, RateService>();
 
 var app = builder.Build();
 
-app.MapGet("/fee-estimate/{coin}", ([FromRoute(Name = "coin")] string coin, IRateService rateService) =>
+app.MapGet("/v1/fee-estimate/{coin}", async (string coin, IRateService rateService) =>
 {
-    var feeEstimate = rateService.GetFeeEstimate(coin);
+    var feeEstimate = await rateService.GetFeeEstimate(coin);
     if (feeEstimate is null)
     {
         return Results.NotFound();
     }
-    return Results.Ok(feeEstimate);
+    return Results.Ok(feeEstimate.MapToOutput());
 });
 
 // Configure the HTTP request pipeline.

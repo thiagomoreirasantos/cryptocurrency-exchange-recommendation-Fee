@@ -1,3 +1,5 @@
+using CryptoCurrencyRecommendations.Services;
+
 namespace CryptoCurrencyRecommendations.Domain.interfaces
 {
     public interface IRateService
