@@ -1,0 +1,12 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.4'
+
+services:
+  cryptocurrencyrecommendationsapi:
+    image: cryptocurrencyrecommendationsapi
+    build:
+      context: .
+      dockerfile: CryptoCurrencyRecommendations.Api/Dockerfile
+    ports:
+      - 5000:5000
