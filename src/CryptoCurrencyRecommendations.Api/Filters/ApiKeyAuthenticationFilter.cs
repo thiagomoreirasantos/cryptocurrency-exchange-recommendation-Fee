@@ -1,5 +1,3 @@
-using CryptoCurrencyRecommendations.Api.Configurations;
-
 namespace CryptoCurrencyRecommendations.Api.Filters
 {
     public class ApiKeyAuthenticationFilter : IEndpointFilter

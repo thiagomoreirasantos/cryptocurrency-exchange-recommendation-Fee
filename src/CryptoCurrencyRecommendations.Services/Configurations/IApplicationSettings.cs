@@ -1,4 +1,4 @@
-namespace CryptoCurrencyRecommendations.Api.Configurations
+namespace CryptoCurrencyRecommendations.Services.Configurations
 {
     public interface IApplicationSettings
     {
