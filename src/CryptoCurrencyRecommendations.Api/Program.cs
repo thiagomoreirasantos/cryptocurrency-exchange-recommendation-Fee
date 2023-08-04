@@ -1,6 +1,3 @@
-using CryptoCurrencyRecommendations.Api.Configurations;
-using CryptoCurrencyRecommendations.Api.Filters;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,17 +6,39 @@ builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 
-var appsettings = builder.Configuration.GetSection("AppSettings").Get<ApplicationSettings>() ?? throw new InvalidOperationException("Unable to get appsettings");
-
+var appsettings = builder.Configuration.GetSection("ApplicationSettings").Get<ApplicationSettings>() ?? throw new InvalidOperationException("Unable to get appsettings");
 builder.Services.AddSingleton<IApplicationSettings>(appsettings);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new() { Title = "CryptoCurrencyRecommendations.Api", Version = "v1" });
+
+    c.AddSecurityDefinition("apikey", new OpenApiSecurityScheme (){
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Name = "apiKey",
+        Description = "Authorization query string expects API key"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "apikey"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddHttpClient();
-builder.Services.AddHttpClient("blockcypher", c =>
+builder.Services.AddHttpClient(appsettings.Main, c =>
 {
-    c.BaseAddress = new Uri("https://api.blockcypher.com/v1/");
+    c.BaseAddress = new Uri(appsettings.Url);
 });
 
 builder.Services.AddScoped<IRateService, RateService>();
@@ -59,6 +78,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

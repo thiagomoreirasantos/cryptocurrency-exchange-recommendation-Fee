@@ -18,9 +18,9 @@ namespace CryptoCurrencyRecommendations.Api.Filters
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var apiKey = context.HttpContext.Request.Headers["ApiKey"].ToString();
+            var apiKey = context.HttpContext.Request.Headers["apiKey"].ToString();
 
-            if (!string.IsNullOrEmpty(apiKey) || string.IsNullOrWhiteSpace(apiKey) || !string.Equals(apiKey, _applicationSettings.ApiKey))
+            if (string.IsNullOrEmpty(apiKey) || string.IsNullOrWhiteSpace(apiKey) || !string.Equals(apiKey, _applicationSettings.ApiKey))
             {
                 return Results.Unauthorized();
             }
