@@ -1,6 +1,7 @@
 {
     "dotnet.defaultSolution": "CryptoCurrencyRecommendations.sln",
     "cSpell.words": [
+        "appsettings",
         "blockcypher",
         "Dtos"
     ]

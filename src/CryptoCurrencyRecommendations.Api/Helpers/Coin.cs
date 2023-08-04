@@ -1,4 +1,4 @@
-namespace CryptoCurrencyRecommendations.Api.Helper
+namespace CryptoCurrencyRecommendations.Api.Helpers
 {
     public enum Coin
     {

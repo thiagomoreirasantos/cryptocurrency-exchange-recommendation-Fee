@@ -1,8 +1,5 @@
-using CryptoCurrencyRecommendations.Api.Extensions;
-using CryptoCurrencyRecommendations.Api.Helper;
-using CryptoCurrencyRecommendations.Domain.interfaces;
-using CryptoCurrencyRecommendations.Services;
-using CryptoCurrencyRecommendations.Services.Dtos;
+using CryptoCurrencyRecommendations.Api.Configurations;
+using CryptoCurrencyRecommendations.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
+
+var appsettings = builder.Configuration.GetSection("AppSettings").Get<ApplicationSettings>() ?? throw new InvalidOperationException("Unable to get appsettings");
+
+builder.Services.AddSingleton<IApplicationSettings>(appsettings);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen();
 
@@ -26,7 +28,7 @@ var app = builder.Build();
 
 app.MapGet("/v1/fee-estimate/kb/btc", async (IRateService rateService) =>
 {
-    var coin = Enum.GetName(typeof(Coin), Coin.btc)?? throw new InvalidOperationException("Unable to get coin");
+    string coin = GetCoin(Coin.btc);
 
     var feeEstimate = await rateService.GetFeeEstimate<BTCFeeEstimate>(coin);
     if (feeEstimate is null)
@@ -34,11 +36,11 @@ app.MapGet("/v1/fee-estimate/kb/btc", async (IRateService rateService) =>
         return Results.NotFound();
     }
     return Results.Ok(feeEstimate.MapBTCToOutput());
-});
+}).AddEndpointFilter<ApiKeyAuthenticationFilter>();
 
 app.MapGet("/v1/fee-estimate/kb/eth", async (IRateService rateService) =>
 {
-    var coin = Enum.GetName(typeof(Coin), Coin.eth)?? throw new InvalidOperationException("Unable to get coin");
+    var coin = GetCoin(Coin.eth);
 
     var feeEstimate = await rateService.GetFeeEstimate<ETHFeeEstimate>(coin);
     if (feeEstimate is null)
@@ -46,7 +48,7 @@ app.MapGet("/v1/fee-estimate/kb/eth", async (IRateService rateService) =>
         return Results.NotFound();
     }
     return Results.Ok(feeEstimate.MapETHToOutput());
-});
+}).AddEndpointFilter<ApiKeyAuthenticationFilter>();;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -62,3 +64,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static string GetCoin(Coin coin)
+{
+    return Enum.GetName(typeof(Coin), coin) ?? throw new InvalidOperationException("Unable to get coin");
+}

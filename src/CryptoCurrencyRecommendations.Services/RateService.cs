@@ -1,7 +1,3 @@
-using CryptoCurrencyRecommendations.Domain.interfaces;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-
 namespace CryptoCurrencyRecommendations.Services
 {
     public class RateService : IRateService
