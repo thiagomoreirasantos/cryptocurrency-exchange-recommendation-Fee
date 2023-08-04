@@ -13,7 +13,7 @@ namespace CryptoCurrencyRecommendations.Services
             ILogger<RateService> logger) =>
             (_httpClientFactory, _logger) = (httpClientFactory, logger);
 
-        public async Task<FeeEstimate> GetFeeEstimate(string coin)
+        public async Task<T> GetFeeEstimate<T>(string coin)
         {
             using HttpClient client = _httpClientFactory.CreateClient();
 
@@ -22,8 +22,7 @@ namespace CryptoCurrencyRecommendations.Services
                 var response = await client.GetAsync($"https://api.blockcypher.com/v1/{coin}/main");
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync();
-                var feeEstimate = JsonConvert.DeserializeObject<FeeEstimate>(result);
-                feeEstimate ??= new FeeEstimate();
+                var feeEstimate = JsonConvert.DeserializeObject<T>(result) ?? throw new InvalidOperationException("Unable to deserialize fee estimate");
                 return feeEstimate;
             }
             catch (Exception ex)

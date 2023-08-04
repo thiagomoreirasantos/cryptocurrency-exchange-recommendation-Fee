@@ -1,6 +1,8 @@
 using CryptoCurrencyRecommendations.Api.Extensions;
+using CryptoCurrencyRecommendations.Api.Helper;
 using CryptoCurrencyRecommendations.Domain.interfaces;
 using CryptoCurrencyRecommendations.Services;
+using CryptoCurrencyRecommendations.Services.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,14 +24,28 @@ builder.Services.AddScoped<IRateService, RateService>();
 
 var app = builder.Build();
 
-app.MapGet("/v1/fee-estimate/{coin}", async (string coin, IRateService rateService) =>
+app.MapGet("/v1/fee-estimate/kb/btc", async (IRateService rateService) =>
 {
-    var feeEstimate = await rateService.GetFeeEstimate(coin);
+    var coin = Enum.GetName(typeof(Coin), Coin.btc)?? throw new InvalidOperationException("Unable to get coin");
+
+    var feeEstimate = await rateService.GetFeeEstimate<BTCFeeEstimate>(coin);
     if (feeEstimate is null)
     {
         return Results.NotFound();
     }
-    return Results.Ok(feeEstimate.MapToOutput());
+    return Results.Ok(feeEstimate.MapBTCToOutput());
+});
+
+app.MapGet("/v1/fee-estimate/kb/eth", async (IRateService rateService) =>
+{
+    var coin = Enum.GetName(typeof(Coin), Coin.eth)?? throw new InvalidOperationException("Unable to get coin");
+
+    var feeEstimate = await rateService.GetFeeEstimate<ETHFeeEstimate>(coin);
+    if (feeEstimate is null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(feeEstimate.MapETHToOutput());
 });
 
 // Configure the HTTP request pipeline.
