@@ -1,4 +1,4 @@
-namespace CryptoCurrencyRecommendations.Api.Dtos
+namespace CryptoCurrencyRecommendations.Services.Dtos
 {
     public class FeeEstimateOutput
     {

@@ -15,7 +15,16 @@ namespace CryptoCurrencyRecommendations.Services
             (_httpClientFactory, _logger, _applicationSettings) = (httpClientFactory, logger, applicationSettings);
         }
 
-        public async Task<FeeEstimate> GetFeeEstimate(string coin)
+        public async Task<FeeEstimate> GetFeeEstimateByCoin(string coin)
+        {
+            return coin switch
+            {
+                "eth" => await GetFeeEstimate<ETHFeeEstimate>(coin),
+                "btc" => await GetFeeEstimate<BTCFeeEstimate>(coin),
+                _ => throw new InvalidOperationException("Invalid coin")
+            };
+        }
+        public async Task<T> GetFeeEstimate<T>(string coin)
         {
             using HttpClient client = _httpClientFactory.CreateClient();
 
@@ -25,7 +34,7 @@ namespace CryptoCurrencyRecommendations.Services
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync();
 
-                var feeEstimate = GetFeeEstimate(coin, result);
+                var feeEstimate = JsonConvert.DeserializeObject<T>(result) ?? throw new InvalidOperationException("Unable to deserialize fee estimate");
                 return feeEstimate;
             }
             catch (Exception ex)
@@ -33,16 +42,6 @@ namespace CryptoCurrencyRecommendations.Services
                 _logger.LogError(ex, "Error getting fee estimate");
                 throw;
             }
-        }
-
-        public static FeeEstimate GetFeeEstimate(string coin, string result)
-        {
-            return coin switch
-            {
-                "eth" => JsonConvert.DeserializeObject<ETHFeeEstimate>(result) ?? throw new InvalidOperationException("Unable to deserialize fee estimate"),
-                "btc" => JsonConvert.DeserializeObject<BTCFeeEstimate>(result) ?? throw new InvalidOperationException("Unable to deserialize fee estimate"),
-                _ => throw new InvalidOperationException("Invalid coin")
-            };
-        }
+        }        
     }
 }

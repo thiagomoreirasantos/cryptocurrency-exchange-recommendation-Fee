@@ -21,5 +21,13 @@ namespace CryptoCurrencyRecommendations.Services.Dtos
 
         [JsonProperty("low_priority_fee")]
         public long LowPriorityFee { get; set; }
+
+        public override FeeEstimateOutput GetOutput() =>
+        new()
+        {
+            HighFeePerKb = this.HighPriorityFee,
+            MediumFeePerKb = this.MediumPriorityFee,
+            LowFeePerKb = this.LowPriorityFee
+        };
     }
 }

@@ -1,5 +1,3 @@
-using CryptoCurrencyRecommendations.Services.Configurations;
-using CryptoCurrencyRecommendations.Services.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,10 +12,12 @@ var appsettings = builder.Configuration.GetSection("ApplicationSettings").Get<Ap
 builder.Services.AddSingleton<IApplicationSettings>(appsettings);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddSwaggerGen(c => {
+builder.Services.AddSwaggerGen(c =>
+{
     c.SwaggerDoc("v1", new() { Title = "CryptoCurrencyRecommendations.Api", Version = "v1" });
 
-    c.AddSecurityDefinition("apikey", new OpenApiSecurityScheme (){
+    c.AddSecurityDefinition("apikey", new OpenApiSecurityScheme()
+    {
         Type = SecuritySchemeType.ApiKey,
         In = ParameterLocation.Header,
         Name = "apiKey",
@@ -49,14 +49,14 @@ builder.Services.AddScoped<IRateService, RateService>();
 
 var app = builder.Build();
 
-app.MapGet("/v1/fee-estimate/{coin}", async ([FromRoute(Name = "coin")] string coin, IRateService rateService) =>
+app.MapGet("/v1/fee-estimate/{coin}/per-kb", async ([FromRoute(Name = "coin")] string coin, IRateService rateService) =>
 {
-    var feeEstimate = await rateService.GetFeeEstimate(coin);
+    var feeEstimate = await rateService.GetFeeEstimateByCoin(coin);
     if (feeEstimate is null)
     {
         return Results.NotFound();
     }
-    return Results.Ok(feeEstimate);
+    return Results.Ok(feeEstimate.GetOutput());
 }).AddEndpointFilter<ApiKeyAuthenticationFilter>();
 
 // Configure the HTTP request pipeline.

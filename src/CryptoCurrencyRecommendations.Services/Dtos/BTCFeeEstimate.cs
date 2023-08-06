@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace CryptoCurrencyRecommendations.Services.Dtos
 {
-    public class BTCFeeEstimate: FeeEstimate
+    public class BTCFeeEstimate : FeeEstimate
     {
         [JsonProperty("high_fee_per_kb")]
         public long HighFeePerKb { get; set; }
@@ -12,5 +12,13 @@ namespace CryptoCurrencyRecommendations.Services.Dtos
 
         [JsonProperty("low_fee_per_kb")]
         public long LowFeePerKb { get; set; }
+
+        public override FeeEstimateOutput GetOutput() =>
+        new()
+        {
+            HighFeePerKb = this.HighFeePerKb,
+            MediumFeePerKb = this.MediumFeePerKb,
+            LowFeePerKb = this.LowFeePerKb
+        };
     }
 }

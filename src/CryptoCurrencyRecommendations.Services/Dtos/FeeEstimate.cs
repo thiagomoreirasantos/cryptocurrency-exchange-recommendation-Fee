@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
+using CryptoCurrencyRecommendations.Services.Dtos;
 
 namespace CryptoCurrencyRecommendations.Services
 {
-    public class FeeEstimate
+    public abstract class FeeEstimate
     {
         [JsonProperty("name")]
         public string? Name { get; set; }
@@ -32,12 +32,14 @@ namespace CryptoCurrencyRecommendations.Services
         public int UnconfirmedCount { get; set; }
 
         [JsonProperty("base_fee")]
-        public long BaseFee { get; set; }        
+        public long BaseFee { get; set; }
 
         [JsonProperty("last_fork_height")]
         public long LastForkHeight { get; set; }
 
         [JsonProperty("last_fork_hash")]
         public string? LastForkHash { get; set; }
+
+        public abstract FeeEstimateOutput GetOutput();
     }
 }
