@@ -1,4 +1,6 @@
 using CryptoCurrencyRecommendations.Services.Configurations;
+using CryptoCurrencyRecommendations.Services.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,29 +49,15 @@ builder.Services.AddScoped<IRateService, RateService>();
 
 var app = builder.Build();
 
-app.MapGet("/v1/fee-estimate/kb/btc", async (IRateService rateService) =>
+app.MapGet("/v1/fee-estimate/{coin}", async ([FromRoute(Name = "coin")] string coin, IRateService rateService) =>
 {
-    string coin = GetCoin(Coin.btc);
-
-    var feeEstimate = await rateService.GetFeeEstimate<BTCFeeEstimate>(coin);
+    var feeEstimate = await rateService.GetFeeEstimate(coin);
     if (feeEstimate is null)
     {
         return Results.NotFound();
     }
-    return Results.Ok(feeEstimate.MapBTCToOutput());
+    return Results.Ok(feeEstimate);
 }).AddEndpointFilter<ApiKeyAuthenticationFilter>();
-
-app.MapGet("/v1/fee-estimate/kb/eth", async (IRateService rateService) =>
-{
-    var coin = GetCoin(Coin.eth);
-
-    var feeEstimate = await rateService.GetFeeEstimate<ETHFeeEstimate>(coin);
-    if (feeEstimate is null)
-    {
-        return Results.NotFound();
-    }
-    return Results.Ok(feeEstimate.MapETHToOutput());
-}).AddEndpointFilter<ApiKeyAuthenticationFilter>();;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -86,8 +74,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-static string GetCoin(Coin coin)
-{
-    return Enum.GetName(typeof(Coin), coin) ?? throw new InvalidOperationException("Unable to get coin");
-}

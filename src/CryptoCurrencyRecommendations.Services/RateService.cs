@@ -1,3 +1,5 @@
+using CryptoCurrencyRecommendations.Services.Dtos;
+
 namespace CryptoCurrencyRecommendations.Services
 {
     public class RateService : IRateService
@@ -13,7 +15,7 @@ namespace CryptoCurrencyRecommendations.Services
             (_httpClientFactory, _logger, _applicationSettings) = (httpClientFactory, logger, applicationSettings);
         }
 
-        public async Task<T> GetFeeEstimate<T>(string coin)
+        public async Task<FeeEstimate> GetFeeEstimate(string coin)
         {
             using HttpClient client = _httpClientFactory.CreateClient();
 
@@ -22,7 +24,8 @@ namespace CryptoCurrencyRecommendations.Services
                 var response = await client.GetAsync($"{_applicationSettings.Url}/{coin}/main");
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync();
-                var feeEstimate = JsonConvert.DeserializeObject<T>(result) ?? throw new InvalidOperationException("Unable to deserialize fee estimate");
+
+                var feeEstimate = GetFeeEstimate(coin, result);
                 return feeEstimate;
             }
             catch (Exception ex)
@@ -30,6 +33,16 @@ namespace CryptoCurrencyRecommendations.Services
                 _logger.LogError(ex, "Error getting fee estimate");
                 throw;
             }
+        }
+
+        public static FeeEstimate GetFeeEstimate(string coin, string result)
+        {
+            return coin switch
+            {
+                "eth" => JsonConvert.DeserializeObject<ETHFeeEstimate>(result) ?? throw new InvalidOperationException("Unable to deserialize fee estimate"),
+                "btc" => JsonConvert.DeserializeObject<BTCFeeEstimate>(result) ?? throw new InvalidOperationException("Unable to deserialize fee estimate"),
+                _ => throw new InvalidOperationException("Invalid coin")
+            };
         }
     }
 }

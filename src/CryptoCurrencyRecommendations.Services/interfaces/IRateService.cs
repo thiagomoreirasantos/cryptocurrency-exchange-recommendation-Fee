@@ -1,9 +1,9 @@
-using CryptoCurrencyRecommendations.Services.Dtos;
+using CryptoCurrencyRecommendations.Services;
 
 namespace CryptoCurrencyRecommendations.Domain.interfaces
 {
     public interface IRateService
     {
-        Task<T> GetFeeEstimate<T>(string coin);
+        Task<FeeEstimate> GetFeeEstimate(string coin);
     }
 }
